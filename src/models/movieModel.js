@@ -9,7 +9,9 @@ const movieSchema = new mongoose.Schema({
         enum: ['available', 'reserved', 'leased'],
         default: 'available',
         required: true
-    }
+    },
+    reservedAt: Date,
+    leaseExpiresAt: Date,
 }, { timestamps: true });
 
 module.exports = mongoose.model('Movie', movieSchema);

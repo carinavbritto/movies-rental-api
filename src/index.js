@@ -4,12 +4,14 @@ const connectDB = require('./utils/db');
 const movieRoutes = require('./routes/movieRoutes');
 const errorHandler = require('./middlewares/errorHandler');
 const movieService = require('./services/movieService');
+const cors = require('cors'); 
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 require('dotenv').config();
 
+app.use(cors());
 app.use(bodyParser.json());
 app.use('/api', movieRoutes);
 app.use(errorHandler);

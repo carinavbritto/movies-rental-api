@@ -28,7 +28,7 @@ exports.reserveMovie = async (req, res) => {
         movie.status = 'reserved';
         await movie.save();
         await reservation.save();
-        res.status(201).json({ reserveId: reservation._id });
+        res.status(201).json({ reserveId: reservation._id, reserveExpiresAt: expiresAt.toISOString() });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
@@ -48,11 +48,13 @@ exports.leaseMovie = async (req, res) => {
         if (movie.status !== 'reserved') {
             return res.status(400).json({ message: "Movie is not reserved" });
         }
+        const leaseExpiresAt = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000); // 3 days from now
         movie.status = 'leased';
+        movie.leaseExpiresAt = leaseExpiresAt;
         reservation.status = 'expired';
         await movie.save();
         await reservation.save();
-        res.status(201).json({ scheduleId: movie._id, status: 'leased' });
+        res.status(201).json({ scheduleId: movie._id, status: 'leased', leaseExpiresAt: leaseExpiresAt.toISOString() });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
@@ -69,6 +71,7 @@ exports.returnMovie = async (req, res) => {
             return res.status(400).json({ message: "Movie is not leased" });
         }
         movie.status = 'available';
+        movie.leaseExpiresAt = undefined;
         await movie.save();
         res.status(201).json({ scheduleId: movie._id, status: 'available' });
     } catch (err) {
