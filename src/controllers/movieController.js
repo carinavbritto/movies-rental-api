@@ -20,7 +20,7 @@ exports.reserveMovie = async (req, res) => {
         if (movie.status !== 'available') {
             return res.status(400).json({ message: "Movie is not available for reservation" });
         }
-        const expiresAt = new Date(Date.now() + 3 * 60 * 60 * 1000); // 3 hours from now
+        const expiresAt = new Date(Date.now() + 3 * 60 * 60 * 1000);
         const reservation = new Reservation({
             movieId: movie._id,
             expiresAt,
@@ -35,7 +35,7 @@ exports.reserveMovie = async (req, res) => {
 };
 
 exports.leaseMovie = async (req, res) => {
-    const { reserveId, customer } = req.body;
+    const { reserveId } = req.body;
     try {
         const reservation = await Reservation.findById(reserveId).populate('movieId');
         if (!reservation || reservation.status !== 'active') {
@@ -48,7 +48,7 @@ exports.leaseMovie = async (req, res) => {
         if (movie.status !== 'reserved') {
             return res.status(400).json({ message: "Movie is not reserved" });
         }
-        const leaseExpiresAt = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000); // 3 days from now
+        const leaseExpiresAt = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000); 
         movie.status = 'leased';
         movie.leaseExpiresAt = leaseExpiresAt;
         reservation.status = 'expired';
